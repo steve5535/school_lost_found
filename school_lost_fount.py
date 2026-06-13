@@ -4,9 +4,11 @@
 # 검색
 # 수정
 
+
+## Srvice
 # 분실물 추가 함수
-def add_lost_item(lost_items_db, id, item, place):
-    lost_items_db[id] = {"이름":item, "장소":place} # 분실물이름과 장소 딕셔너리로 저장한 값을 전체 분실물 딕셔너리에 추가
+def add_lost_item(lost_items_db, ID, item, place):
+    lost_items_db[ID] = {"이름":item, "장소":place} # 분실물이름과 장소 딕셔너리로 저장한 값을 전체 분실물 딕셔너리에 추가
 '''
 {
     1: {"이름":???, "장소":???},
@@ -14,14 +16,11 @@ def add_lost_item(lost_items_db, id, item, place):
 }
 '''
 
-
 # 분실물 전체 검색 함수
 def search_all_item(lost_items_db):
     item_box = []
-    for i in range(len(lost_items_db)):
-        item_name = lost_items_db[i+1]["이름"]
-        item_place = lost_items_db[i+1]["장소"]
-        item_box.append([i+1, item_name, item_place])
+    for item_id, item_info in lost_items_db.items():
+        item_box.append([item_id, item_info["이름"], item_info["장소"]])
     return item_box
 
 # 분실물 이름으로 검색
@@ -32,11 +31,11 @@ def search_name_item(input_item, lost_items_db):
             lost_items_db[i+1]
             
         
-
+## Controller
 # 메인함수
 def main():
     lost_items_db = {}
-    id = 1
+    ID = 1
     
     while True:
         print("=============================")
@@ -44,17 +43,22 @@ def main():
         print("2. 전체 분실물 검색")
         print("3. 분실물 이름으로 검색")
         print("4. 종료")
-        input_num = int(input("번호 입력> "))
-        
+        try:
+            input_num = int(input("번호 입력> "))
+            if not(1 <= input_num <= 4):
+                raise ValueError("1부터 4까지 사이의 숫자를 입력해주세요")
+        except ValueError:
+            print("잘못된 입력을 하셨습니다. 다시 입력하세요")
+            continue
         # 분실물 등록
         if input_num == 1: 
             item = input("분실물 이름을 작성하세요> ")
             place = input("분실물을 습득한 장소 작성하세요> ")
-            add_lost_item(lost_items_db, id, item, place)
-            id += 1
+            add_lost_item(lost_items_db, ID, item, place)
+            ID += 1
         
         # 전체 분실물 검색
-        if input_num == 2: 
+        elif input_num == 2: 
             if len(lost_items_db) == 0: # 등록된 분실물이 있는지 검사
                 print("아직 등록된 분실물이 없습니다")
             else: # 있다면 보여주기
@@ -63,7 +67,7 @@ def main():
                     print(f"{req_id}. 이름: {req_name}, 찾은 장소: {req_place}")
         
         # 분실물 이름으로 검색
-        if input_num == 3: 
+        elif input_num == 3: 
             input_item = input("분실물 이름을 입력하세요> ")
             if len(lost_items_db) == 0: # 등록된 분실물이 있는지 검사
                 print("아직 등록된 분실물이 없습니다")
@@ -71,7 +75,7 @@ def main():
                 search_name_item(input_item, lost_items_db)
         
         # 종료
-        if input_num == 4: 
+        elif input_num == 4: 
             print("프로그램을 종료합니다")
             break
 
