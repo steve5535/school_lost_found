@@ -20,15 +20,28 @@ def add_lost_item(lost_items_db, ID, item, place):
 def search_all_item(lost_items_db):
     item_box = []
     for item_id, item_info in lost_items_db.items():
-        item_box.append([item_id, item_info["이름"], item_info["장소"]])
+        item_box.append(
+                        {"id":item_id,
+                         "이름":item_info["이름"],
+                         "장소":item_info["장소"]}
+                        )
     return item_box
 
 # 분실물 이름으로 검색
 def search_name_item(input_item, lost_items_db):
-    for i in range(len(lost_items_db)):
-        item_name = lost_items_db[i+1]["이름"]
-        if input_item == item_name:
-            lost_items_db[i+1]
+    item_box = []
+    is_in_item = False
+    for item_id, item_info in lost_items_db.items():
+        item_name = item_info["이름"]
+        if input_item in item_name:
+            item_box.append(
+                            {"id":item_id,
+                             "이름":item_info["이름"],
+                             "장소":item_info["장소"]
+                             }
+                            )
+            is_in_item = True
+    return is_in_item, item_box
             
         
 ## Controller
@@ -63,16 +76,22 @@ def main():
                 print("아직 등록된 분실물이 없습니다")
             else: # 있다면 보여주기
                 items_list = search_all_item(lost_items_db)
-                for req_id, req_name, req_place in items_list:
-                    print(f"{req_id}. 이름: {req_name}, 찾은 장소: {req_place}")
+                for item in items_list:
+                    print(f"{item['id']}. 이름: {item['이름']}, 찾은 장소: {item['장소']}")
         
         # 분실물 이름으로 검색
         elif input_num == 3: 
-            input_item = input("분실물 이름을 입력하세요> ")
             if len(lost_items_db) == 0: # 등록된 분실물이 있는지 검사
                 print("아직 등록된 분실물이 없습니다")
             else:
-                search_name_item(input_item, lost_items_db)
+                input_item = input("분실물 이름을 입력하세요> ")
+                is_found, found_list = search_name_item(input_item, lost_items_db)
+                if is_found:
+                    print(f"{input_item}이(가) 포함된 분실물을 찾았습니다")
+                    for item in found_list:
+                        print(f"{item['id']}. 이름: {item['이름']}, 찾은 장소: {item['장소']}")
+                else:
+                    print(f"현재 있는 분실물중 \"{input_item}\"은(는) 없습니다")
         
         # 종료
         elif input_num == 4: 
