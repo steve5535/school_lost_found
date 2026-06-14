@@ -49,6 +49,9 @@ def search_name_item(input_item, lost_items_db):
 # 분실물 장소로 검색
 # def search_place_itme():
 
+# 분실물 가져가기
+#def take_lost_item():
+
 # bool자료형으로 받은 상태를 문자로 변경
 def bool_chg_str(is_in_item):
     if is_in_item:
