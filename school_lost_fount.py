@@ -45,6 +45,16 @@ def search_name_item(input_item, lost_items_db):
                             })
             is_in_item = True
     return is_in_item, item_box
+
+# 분실물 장소로 검색
+# def search_place_itme():
+
+# bool자료형으로 받은 상태를 문자로 변경
+def bool_chg_str(is_in_item):
+    if is_in_item:
+        return "보관중"
+    else:
+        return "찾아감"
             
         
 ## Controller
@@ -81,7 +91,7 @@ def main():
             else: # 있다면 보여주기
                 items_list = search_all_item(lost_items_db)
                 for item in items_list:
-                    print(f"{item['id']}. 이름: {item['이름']}, 찾은 장소: {item['장소']}, 상태: {item['상태']}")
+                    print(f"{item['id']}. 이름: {item['이름']}, 찾은 장소: {item['장소']}, 상태: {bool_chg_str(item['상태'])}")
         
         # 분실물 이름으로 검색
         elif input_num == 3: 
@@ -93,7 +103,7 @@ def main():
                 if is_found:
                     print(f"{input_item}이(가) 포함된 분실물을 찾았습니다")
                     for item in found_list:
-                        print(f"{item['id']}. 이름: {item['이름']}, 찾은 장소: {item['장소']}, 상태: {item['상태']}")
+                        print(f"{item['id']}. 이름: {item['이름']}, 찾은 장소: {item['장소']}, 상태: {bool_chg_str(item['상태'])}")
                 else:
                     print(f"현재 있는 분실물중 '{input_item}'은(는) 없습니다")
         
