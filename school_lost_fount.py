@@ -7,8 +7,8 @@
 '''
 lost_items 형식
 {
-    1: {"이름":???, "장소":???, "상태:True"},
-    2: {"이름":???, "장소":???, "상태:Flase"}
+    1: {"이름":???, "장소":???, "상태":True},
+    2: {"이름":???, "장소":???, "상태":Flase}
 }
 '''
 
@@ -64,7 +64,9 @@ def search_place_item(input_place, lost_items):
     
 
 # 분실물 가져가기
-#def take_lost_item():
+def take_lost_item(input_id, lost_items):
+    lost_items[input_id]["상태"] = False
+    
 
 # bool자료형으로 받은 상태를 문자로 변경
 def bool_chg_str(is_in_item):
@@ -77,8 +79,13 @@ def bool_chg_str(is_in_item):
 ## Controller
 # 메인함수
 def main():
-    lost_items = {}
-    item_id = 1
+    lost_items = {
+        1:{"이름":"연필", "장소":"교실", "상태":True},
+        2:{"이름":"시계", "장소":"운동장", "상태":True},
+        3:{"이름":"에어팟", "장소":"운동장", "상태":True},
+        4:{"이름":"연필", "장소":"교무실", "상태":True}
+    }
+    item_id = len(lost_items) + 1
     
     while True:
         print("=============================")
@@ -86,10 +93,11 @@ def main():
         print("2. 전체 분실물 검색")
         print("3. 분실물 이름으로 검색")
         print("4. 분실한 장소로 검색")
-        print("5. 종료")
+        print("5. 분실물 찾아가기")
+        print("6. 종료")
         try:
             input_num = int(input("번호 입력> "))
-            if not(1 <= input_num <= 5):
+            if not(1 <= input_num <= 6):
                 raise ValueError("1부터 5까지 사이의 숫자를 입력해주세요")
         except ValueError:
             print("잘못된 입력을 하셨습니다. 다시 입력하세요")
@@ -138,9 +146,28 @@ def main():
                         print(f"{item['id']}. 이름: {item['이름']}, 찾은 장소: {item['장소']}, 상태: {bool_chg_str(item['상태'])}")
                 else: # 입력한 장소에서 찾은 분실물이 없다면
                     print(f"현재 있는 분실물중 '{input_place}'에서 찾은 분실물은 없습니다")
-                    
+        
+        # 분실물 찾아가기
+        elif input_num == 5:
+            input_id = int(input("분실물의 번호를 입력하세요> "))
+            take_item_name = lost_items[input_id]["이름"]
+            take_item_place = lost_items[input_id]["장소"]
+            while True:
+                is_take = input(f"{take_item_place}에서 찾은 {take_item_name}을(를) 가져가겠습니까? (y,n)> ")
+                if is_take == "y" or is_take == "n":
+                    break
+                else:
+                    print("'y'또는 'n'을 입력해주세요.")
+            if is_take == "y":
+                input_student_name = input("이름을 입력해주세요> ")
+                input_student_number= input("학번을 입력해주세요> ")
+                take_lost_item(input_id, lost_items)
+                print("분실물을 가져가셨습니다.")
+            else:
+                print("가져가지 않으셨습니다.")
+        
         # 종료
-        elif input_num == 5: 
+        elif input_num == 6: 
             print("프로그램을 종료합니다")
             break
 
