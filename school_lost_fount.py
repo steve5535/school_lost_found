@@ -23,11 +23,11 @@ def search_all_item(lost_items):
     item_box = []
     for item_id, item_info in lost_items.items():
         item_box.append({
-                         "id":item_id,
-                         "이름":item_info["이름"],
-                         "장소":item_info["장소"],
-                         "상태":item_info["상태"]
-                        })
+                "id":item_id,
+                "이름":item_info["이름"],
+                "장소":item_info["장소"],
+                "상태":item_info["상태"]
+            })
     return item_box
 
 # 분실물 이름으로 검색
@@ -38,27 +38,27 @@ def search_name_item(input_item, lost_items):
         item_name = item_info["이름"]
         if input_item in item_name:
             item_box.append({
-                             "id":item_id,
-                             "이름":item_info["이름"],
-                             "장소":item_info["장소"],
-                             "상태":item_info["상태"]
-                            })
+                "id":item_id,
+                "이름":item_info["이름"],
+                "장소":item_info["장소"],
+                "상태":item_info["상태"]
+            })
             is_in_item = True
     return is_in_item, item_box
 
 # 분실한 장소로 검색
-def search_place_itme(input_place, lost_items):
+def search_place_item(input_place, lost_items):
     item_box = []
     is_in_item = False
     for item_id, item_info in lost_items.items():
         item_place = item_info["장소"]
         if input_place == item_place:
             item_box.append({
-                            "id":item_id,
-                            "이름":item_info["이름"],
-                            "장소":item_info["장소"],
-                            "상태":item_info["상태"]
-                            })
+                "id":item_id,
+                "이름":item_info["이름"],
+                "장소":item_info["장소"],
+                "상태":item_info["상태"]
+            })
             is_in_item = True
     return is_in_item, item_box
     
@@ -131,7 +131,7 @@ def main():
                 print("아직 등록된 분실물이 없습니다")
             else:
                 input_place = input("분실한 장소를 입력하세요> ")
-                is_found, found_list = search_place_itme(input_place, lost_items)
+                is_found, found_list = search_place_item(input_place, lost_items)
                 if is_found: # 입력한 장소에 대한 분실물이 있다면
                     print(f"{input_place}에서 찾은 분실물을 찾았습니다")
                     for item in found_list:
