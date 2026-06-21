@@ -61,20 +61,27 @@ def search_place_item(input_place, lost_items):
             })
             is_in_item = True
     return is_in_item, item_box
-    
 
 # 분실물 가져가기
 def take_lost_item(input_id, lost_items):
     lost_items[input_id]["상태"] = False
-    
+
+# 분실물 가져간 학생 추가
+def add_take_student(student_name, student_number, id, lost_items):
+    item_name = lost_items[id]["이름"]
+    take_students = {
+        "분실물":item_name,
+        "학생이름":student_name,
+        "학생학번":student_number
+    }
+    return take_students
 
 # bool자료형으로 받은 상태를 문자로 변경
 def bool_chg_str(is_in_item):
     if is_in_item:
         return "보관중"
     else:
-        return "찾아감"
-            
+        return "찾아감" 
         
 ## Controller
 # 메인함수
@@ -85,6 +92,7 @@ def main():
         3:{"이름":"에어팟", "장소":"운동장", "상태":True},
         4:{"이름":"연필", "장소":"교무실", "상태":True}
     }
+    take_students = {}
     item_id = len(lost_items) + 1
     
     while True:
@@ -149,6 +157,9 @@ def main():
         
         # 분실물 찾아가기
         elif input_num == 5:
+            if len(lost_items) == 0:
+                print("아직 등록된 분실물이 없습니다")
+                continue
             input_id = int(input("분실물의 번호를 입력하세요> "))
             take_item_name = lost_items[input_id]["이름"]
             take_item_place = lost_items[input_id]["장소"]
@@ -162,7 +173,9 @@ def main():
                 input_student_name = input("이름을 입력해주세요> ")
                 input_student_number= input("학번을 입력해주세요> ")
                 take_lost_item(input_id, lost_items)
+                take_students[input_id] = add_take_student(input_student_name, input_student_number, input_id, lost_items)
                 print("분실물을 가져가셨습니다.")
+                print(take_students)
             else:
                 print("가져가지 않으셨습니다.")
         
