@@ -16,7 +16,7 @@ lost_items 형식
 ## Srvice
 # 분실물 추가 함수
 def add_lost_item(lost_items, item_id, item, place, state):
-    lost_items[item_id] = {"이름":item, "장소":place, "상태":state} # 분실물이름과 장소 딕셔너리로 저장한 값을 전체 분실물 딕셔너리에 추가
+    lost_items[item_id] = {"이름":item, "장소":place, "상태":state} # 분실물이름과 장소 딕셔너리로 저장한 값을 전체 분실물 딕셔너리에 추가 나중에 JSON파일 형식처럼
 
 # 분실물 전체 검색 함수
 def search_all_item(lost_items):
@@ -77,7 +77,7 @@ def add_take_student(student_name, student_number, id, lost_items):
     return take_students
 
 # bool자료형으로 받은 상태를 문자로 변경
-def bool_chg_str(is_in_item):
+def status_to_string(is_in_item):
     if is_in_item:
         return "보관중"
     else:
@@ -87,12 +87,14 @@ def bool_chg_str(is_in_item):
 # 메인함수
 def main():
     lost_items = {
-        1:{"이름":"연필", "장소":"교실", "상태":True},
+        1:{"이름":"연필", "장소":"교실", "상태":False},
         2:{"이름":"시계", "장소":"운동장", "상태":True},
         3:{"이름":"에어팟", "장소":"운동장", "상태":True},
         4:{"이름":"연필", "장소":"교무실", "상태":True}
     }
-    take_students = {}
+    take_students = {
+        1:{"분실물":"연필", "학생이름":"성선혁", "학생학번":"20713"}
+    }
     item_id = len(lost_items) + 1
     
     while True:
@@ -125,7 +127,7 @@ def main():
             else: # 있다면 보여주기
                 items_list = search_all_item(lost_items)
                 for item in items_list:
-                    print(f"{item['id']}. 이름: {item['이름']}, 찾은 장소: {item['장소']}, 상태: {bool_chg_str(item['상태'])}")
+                    print(f"{item['id']}. 이름: {item['이름']}, 찾은 장소: {item['장소']}, 상태: {status_to_string(item['상태'])}")
         
         # 분실물 이름으로 검색
         elif input_num == 3: 
@@ -137,7 +139,7 @@ def main():
                 if is_found: # 입력한 분실물 이름을 포함한 분실물이 저장되어 있다면
                     print(f"{input_item}이(가) 포함된 분실물을 찾았습니다")
                     for item in found_list:
-                        print(f"{item['id']}. 이름: {item['이름']}, 찾은 장소: {item['장소']}, 상태: {bool_chg_str(item['상태'])}")
+                        print(f"{item['id']}. 이름: {item['이름']}, 찾은 장소: {item['장소']}, 상태: {status_to_string(item['상태'])}")
                 else: # 입력한 분실물 이름을 포함한 분실물이 없다면
                     print(f"현재 있는 분실물중 '{input_item}'이(가) 포함되어있는 분실물은 없습니다")
         
@@ -151,7 +153,7 @@ def main():
                 if is_found: # 입력한 장소에 대한 분실물이 있다면
                     print(f"{input_place}에서 찾은 분실물을 찾았습니다")
                     for item in found_list:
-                        print(f"{item['id']}. 이름: {item['이름']}, 찾은 장소: {item['장소']}, 상태: {bool_chg_str(item['상태'])}")
+                        print(f"{item['id']}. 이름: {item['이름']}, 찾은 장소: {item['장소']}, 상태: {status_to_string(item['상태'])}")
                 else: # 입력한 장소에서 찾은 분실물이 없다면
                     print(f"현재 있는 분실물중 '{input_place}'에서 찾은 분실물은 없습니다")
         
@@ -160,9 +162,17 @@ def main():
             if len(lost_items) == 0:
                 print("아직 등록된 분실물이 없습니다")
                 continue
-            input_id = int(input("분실물의 번호를 입력하세요> "))
+            input_id = int(input("찾아가려는 분실물의 번호를 입력하세요> "))
+            if input_id not in lost_items.keys():
+                print(f"'{input_id}'번은 존재하지 않는 분실물 번호입니다.")
+                continue
             take_item_name = lost_items[input_id]["이름"]
             take_item_place = lost_items[input_id]["장소"]
+            if lost_items[input_id]["상태"] == False: # 이미 가져갔다면
+                take_student_name_masked = (take_students[input_id]["학생이름"])[0] + "*" + (take_students[input_id]["학생이름"])[2:] # 가져간 학생이름 2번째 이름 *으로 마스킹 하기
+                take_student_number = take_students[input_id]["학생학번"]
+                print(f"{take_item_place}에서 찾은 {take_item_name}은(는) {take_student_number} {take_student_name_masked}이(가) 가져갔습니다.")
+                continue
             while True:
                 is_take = input(f"{take_item_place}에서 찾은 {take_item_name}을(를) 가져가겠습니까? (y,n)> ")
                 if is_take == "y" or is_take == "n":
@@ -172,10 +182,9 @@ def main():
             if is_take == "y":
                 input_student_name = input("이름을 입력해주세요> ")
                 input_student_number= input("학번을 입력해주세요> ")
-                take_lost_item(input_id, lost_items)
                 take_students[input_id] = add_take_student(input_student_name, input_student_number, input_id, lost_items)
+                take_lost_item(input_id, lost_items)
                 print("분실물을 가져가셨습니다.")
-                print(take_students)
             else:
                 print("가져가지 않으셨습니다.")
         
