@@ -4,6 +4,8 @@
 # 검색
 # 수정
 
+#TODO: while문 돌아가기 기능 함수로 만들어서 추가하기
+
 '''
 lost_items 형식
 {
@@ -123,60 +125,71 @@ def main():
         elif input_num == 3: 
             if len(lost_items) == 0: # 분실물이 저장되어 있는지 검사
                 print("아직 등록된 분실물이 없습니다")
-            else:
+                continue
+            while True:
                 input_item = input("분실물 이름을 입력하세요> ")
                 is_found, found_list = search_item(input_num, input_item, lost_items)
                 if is_found: # 입력한 분실물 이름을 포함한 분실물이 저장되어 있다면
                     print(f"{input_item}이(가) 포함된 분실물을 찾았습니다")
                     for item in found_list:
                         print(f"{item['id']}. 이름: {item['이름']}, 찾은 장소: {item['장소']}, 상태: {status_to_string(item['상태'])}")
+                    break
                 else: # 입력한 분실물 이름을 포함한 분실물이 없다면
-                    print(f"현재 있는 분실물중 '{input_item}'이(가) 포함되어있는 분실물은 없습니다")
+                    print(f"현재 있는 분실물 중 '{input_item}'이(가) 포함되어있는 분실물은 없습니다. 다시 입력하세요")
         
         # 분실한 장소로 검색
         elif  input_num == 4:
             if len(lost_items) == 0: # 분실물이 저장되어 있는지 검사
                 print("아직 등록된 분실물이 없습니다")
-            else:
+                continue
+            while True:
                 input_place = input("분실한 장소를 입력하세요> ")
                 is_found, found_list = search_item(input_num, input_place, lost_items)
                 if is_found: # 입력한 장소에 대한 분실물이 있다면
                     print(f"{input_place}에서 찾은 분실물을 찾았습니다")
                     for item in found_list:
                         print(f"{item['id']}. 이름: {item['이름']}, 찾은 장소: {item['장소']}, 상태: {status_to_string(item['상태'])}")
+                    break
                 else: # 입력한 장소에서 찾은 분실물이 없다면
-                    print(f"현재 있는 분실물중 '{input_place}'에서 찾은 분실물은 없습니다")
+                    print(f"현재 있는 분실물 중 '{input_place}'에서 찾은 분실물은 없습니다. 다시 입력하세요")
         
         # 분실물 찾아가기
         elif input_num == 5:
             if len(lost_items) == 0:
                 print("아직 등록된 분실물이 없습니다")
                 continue
-            input_id = int(input("찾아가려는 분실물의 번호를 입력하세요> "))
-            if input_id not in lost_items.keys():
-                print(f"'{input_id}'번은 존재하지 않는 분실물 번호입니다.")
-                continue
-            take_item_name = lost_items[input_id]["이름"]
-            take_item_place = lost_items[input_id]["장소"]
-            if lost_items[input_id]["상태"] == False: # 이미 가져갔다면
-                take_student_name_masked = (take_students[input_id]["학생이름"])[0] + "*" + (take_students[input_id]["학생이름"])[2:] # 가져간 학생이름 2번째 이름 *으로 마스킹 하기
-                take_student_number = take_students[input_id]["학생학번"]
-                print(f"{take_item_place}에서 찾은 {take_item_name}은(는) {take_student_number} {take_student_name_masked}이(가) 가져갔습니다.")
-                continue
             while True:
-                is_take = input(f"{take_item_place}에서 찾은 {take_item_name}을(를) 가져가겠습니까? (y,n)> ")
-                if is_take == "y" or is_take == "n":
+                try:
+                    input_id = int(input("찾아가려는 분실물의 번호를 입력하세요> "))
+                except ValueError:
+                    print("분실물 번호로 다시 입력해주세요.")
+                    continue
+                if input_id not in lost_items.keys():
+                    print(f"'{input_id}'번은 존재하지 않는 분실물 번호입니다. 다시 입력하세요.")
+                    continue
+                take_item_name = lost_items[input_id]["이름"]
+                take_item_place = lost_items[input_id]["장소"]
+                if lost_items[input_id]["상태"] == False: # 이미 가져갔다면
+                    take_student_name_masked = (take_students[input_id]["학생이름"])[0] + "*" + (take_students[input_id]["학생이름"])[2:] # 가져간 학생이름 2번째 이름 *으로 마스킹 하기
+                    take_student_number = take_students[input_id]["학생학번"]
+                    print(f"{take_item_place}에서 찾은 {take_item_name}은(는) {take_student_number} {take_student_name_masked}이(가) 가져갔습니다.")
+                    continue
+                while True:
+                    is_take = input(f"{take_item_place}에서 찾은 {take_item_name}을(를) 가져가겠습니까? (y,n)> ")
+                    if is_take == "y" or is_take == "n":
+                        break
+                    else:
+                        print("'y'또는 'n'을 입력해주세요.")
+                if is_take == "y":
+                    input_student_name = input("이름을 입력해주세요> ")
+                    input_student_number= input("학번을 입력해주세요> ")
+                    take_students[input_id] = add_take_student(input_student_name, input_student_number, input_id, lost_items)
+                    take_lost_item(input_id, lost_items)
+                    print("분실물을 가져가셨습니다.")
                     break
                 else:
-                    print("'y'또는 'n'을 입력해주세요.")
-            if is_take == "y":
-                input_student_name = input("이름을 입력해주세요> ")
-                input_student_number= input("학번을 입력해주세요> ")
-                take_students[input_id] = add_take_student(input_student_name, input_student_number, input_id, lost_items)
-                take_lost_item(input_id, lost_items)
-                print("분실물을 가져가셨습니다.")
-            else:
-                print("가져가지 않으셨습니다.")
+                    print("가져가지 않으셨습니다.")
+                    break
         
         # 종료
         elif input_num == 6: 
