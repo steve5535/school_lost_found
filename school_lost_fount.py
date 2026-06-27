@@ -151,7 +151,7 @@ def main():
                     break
                 is_found, found_list = search_item(input_num, input_item, lost_items)
                 if is_found: # 입력한 분실물 이름을 포함한 분실물이 저장되어 있다면
-                    print(f"'{input_item}'이(가) 포함된 분실물을 찾았습니다")
+                    print(f"'{input_item}'이(가) 포함된 분실물을 찾았습니다.")
                     for item in found_list:
                         print(f"{item['id']}. 이름: {item['이름']}, 찾은 장소: {item['장소']}, 등록 시간: {item['등록시간']}, 상태: {status_to_string(item['상태'])}")
                 else: # 입력한 분실물 이름을 포함한 분실물이 없다면
@@ -201,7 +201,7 @@ def main():
                     else:
                         take_student_name_masked = (take_students[input_id]["학생이름"])[0] + "*" + (take_students[input_id]["학생이름"])[2:] # 가져간 학생이름 2번째 이름 *으로 마스킹 하기
                     take_student_number = take_students[input_id]["학생학번"]
-                    print(f"{take_item_place}에서 찾은 {take_item_name}은(는) {take_student_number} {take_student_name_masked}이(가) 가져갔습니다.")
+                    print(f"{take_item_place}에서 찾은 {take_item_name}은(는) {take_student_number} {take_student_name_masked}이(가) {take_students[input_id]['가져간시간']}에 가져갔습니다.")
                     continue
                 while True:
                     is_take = input(f"{take_item_place}에서 찾은 {take_item_name}을(를) 가져가겠습니까? (y,n)> ")
@@ -221,11 +221,15 @@ def main():
                         if len(input_student_number) != 5:
                             print("학번을 '20713'형식으로 다시 입력하세요.")
                             continue
+                        try:
+                            input_student_number = int(input_student_number)
+                        except ValueError:
+                            print("숫자를 입력하세요.")
+                            continue
+                        take_students[student_id] = add_take_student(input_student_name, input_student_number, student_id, lost_items)
+                        take_lost_item(input_id, lost_items)
+                        print("분실물을 가져가셨습니다.")
                         break
-                    take_students[student_id] = add_take_student(input_student_name, input_student_number, student_id, lost_items)
-                    take_lost_item(input_id, lost_items)
-                    print("분실물을 가져가셨습니다.")
-                    break
                 else:
                     print("가져가지 않으셨습니다.")
                     break
