@@ -14,7 +14,7 @@ lost_items 형식
 
 '''
 take_students 형식
-    1: {"분실물":???, "학생이름":???, "학생학번":???, "가져간시간": ?년 ?월 ?일}
+    1: {"분실물":???, "분실물id": ? "학생이름":???, "학생학번":???, "가져간시간": ?년 ?월 ?일}
 '''
 
 
@@ -68,11 +68,12 @@ def take_lost_item(input_id, lost_items):
     lost_items[input_id]["상태"] = False
 
 # 분실물 가져간 학생 추가
-def add_take_student(student_name, student_number, student_id, lost_items):
+def add_take_student(student_name, student_number, input_id, lost_items):
     item_take_time = datetime.datetime.now().strftime("%Y년 %m월 %d일")
-    item_name = lost_items[student_id]["이름"]
+    item_name = lost_items[input_id]["이름"]
     take_students = {
         "분실물":item_name,
+        "분실물id": input_id,
         "학생이름":student_name,
         "학생학번":student_number,
         "가져간시간":item_take_time
@@ -98,11 +99,12 @@ def main():
     lost_items = {
         1:{"이름":"연필", "장소":"교실", "등록시간": "2026년 05월 20일", "상태":False},
         2:{"이름":"시계", "장소":"운동장", "등록시간": "2026년 03월 15일", "상태":True},
-        3:{"이름":"에어팟", "장소":"운동장", "등록시간": "2026년 06월 30일", "상태":True},
+        3:{"이름":"에어팟", "장소":"운동장", "등록시간": "2026년 06월 30일", "상태":False},
         4:{"이름":"연필", "장소":"교무실", "등록시간": "2026년 04월 14일", "상태":True}
     }
     take_students = {
-        1:{"분실물":"연필", "학생이름":"성선혁", "학생학번":"20713", "가져간시간": "2026년 06월 1일"}
+        1: {"분실물":"연필", "분실물id":1, "학생이름":"성선혁", "학생학번":20713, "가져간시간": "2026년 06월 01일"},
+        2: {"분실물":"에어팟", "분실물id":3, "학생이름":"서성민", "학생학번":20712, "가져간시간": "2026년 07월 01일"}
     }
     item_id = len(lost_items) + 1
     student_id = len(take_students) + 1
@@ -196,12 +198,13 @@ def main():
                 take_item_name = lost_items[input_id]["이름"]
                 take_item_place = lost_items[input_id]["장소"]
                 if lost_items[input_id]["상태"] == False: # 이미 가져갔다면
-                    if (len(take_students[input_id]["학생이름"]) == 1):
-                        take_student_name_masked = take_students[input_id]["학생이름"][0] + "*"
-                    else:
-                        take_student_name_masked = (take_students[input_id]["학생이름"])[0] + "*" + (take_students[input_id]["학생이름"])[2:] # 가져간 학생이름 2번째 이름 *으로 마스킹 하기
-                    take_student_number = take_students[input_id]["학생학번"]
-                    print(f"{take_item_place}에서 찾은 {take_item_name}은(는) {take_student_number} {take_student_name_masked}이(가) {take_students[input_id]['가져간시간']}에 가져갔습니다.")
+                    for i in range(1, student_id+1):
+                        if take_students[i]["분실물id"] == input_id:
+                            take_student_id = i
+                            break
+                    take_student_name_masked = (take_students[take_student_id]["학생이름"])[0] + "*" + (take_students[take_student_id]["학생이름"])[2:] # 가져간 학생이름 2번째 이름 *으로 마스킹 하기
+                    take_student_number = take_students[take_student_id]["학생학번"]
+                    print(f"{take_item_place}에서 찾은 {take_item_name}은(는) {take_student_number} {take_student_name_masked}이(가) {take_students[take_student_id]['가져간시간']}에 가져갔습니다.")
                     continue
                 while True:
                     is_take = input(f"{take_item_place}에서 찾은 {take_item_name}을(를) 가져가겠습니까? (y,n)> ")
@@ -226,9 +229,10 @@ def main():
                         except ValueError:
                             print("숫자를 입력하세요.")
                             continue
-                        take_students[student_id] = add_take_student(input_student_name, input_student_number, student_id, lost_items)
+                        take_students[student_id] = add_take_student(input_student_name, input_student_number, input_id, lost_items)
                         take_lost_item(input_id, lost_items)
                         print("분실물을 가져가셨습니다.")
+                        student_id = len(take_students) + 1
                         break
                 else:
                     print("가져가지 않으셨습니다.")
