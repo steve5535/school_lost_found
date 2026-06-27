@@ -126,7 +126,9 @@ def main():
             continue
         # 분실물 등록
         if input_num == 1: 
-            item = input("분실물 이름을 작성하세요> ")
+            item = input("분실물 이름을 작성하세요(메뉴로 돌아가기 'q')> ")
+            if back_menu(item):
+                continue
             place = input("분실물을 습득한 장소 작성하세요> ")
             state = True
             add_lost_item(lost_items, item_id, item, place, state)
@@ -236,7 +238,7 @@ def main():
                         take_students[student_id] = add_take_student(input_student_name, input_student_number, input_id, lost_items)
                         take_lost_item(input_id, lost_items)
                         print("분실물을 가져가셨습니다.")
-                        student_id = len(take_students) + 1
+                        student_id += 1
                         break
                 else:
                     print("가져가지 않으셨습니다.")
