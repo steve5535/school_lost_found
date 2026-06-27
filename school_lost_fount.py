@@ -12,6 +12,12 @@ lost_items 형식
 }
 '''
 
+'''
+take_students 형식
+    1: {"분실물":???, "학생이름":???, "학생학번":???, "가져간시간": ?년 ?월 ?일}
+'''
+
+
 import datetime
 
 
@@ -63,11 +69,13 @@ def take_lost_item(input_id, lost_items):
 
 # 분실물 가져간 학생 추가
 def add_take_student(student_name, student_number, student_id, lost_items):
+    item_take_time = datetime.datetime.now().strftime("%Y년 %m월 %d일")
     item_name = lost_items[student_id]["이름"]
     take_students = {
         "분실물":item_name,
         "학생이름":student_name,
-        "학생학번":student_number
+        "학생학번":student_number,
+        "가져간시간":item_take_time
     }
     return take_students
 
@@ -94,7 +102,7 @@ def main():
         4:{"이름":"연필", "장소":"교무실", "등록시간": "2026년 04월 14일", "상태":True}
     }
     take_students = {
-        1:{"분실물":"연필", "학생이름":"성선혁", "학생학번":"20713"}
+        1:{"분실물":"연필", "학생이름":"성선혁", "학생학번":"20713", "가져간시간": "2026년 06월 1일"}
     }
     item_id = len(lost_items) + 1
     student_id = len(take_students) + 1
@@ -188,7 +196,10 @@ def main():
                 take_item_name = lost_items[input_id]["이름"]
                 take_item_place = lost_items[input_id]["장소"]
                 if lost_items[input_id]["상태"] == False: # 이미 가져갔다면
-                    take_student_name_masked = (take_students[input_id]["학생이름"])[0] + "*" + (take_students[input_id]["학생이름"])[2:] # 가져간 학생이름 2번째 이름 *으로 마스킹 하기
+                    if (len(take_students[input_id]["학생이름"]) == 1):
+                        take_student_name_masked = take_students[input_id]["학생이름"][0] + "*"
+                    else:
+                        take_student_name_masked = (take_students[input_id]["학생이름"])[0] + "*" + (take_students[input_id]["학생이름"])[2:] # 가져간 학생이름 2번째 이름 *으로 마스킹 하기
                     take_student_number = take_students[input_id]["학생학번"]
                     print(f"{take_item_place}에서 찾은 {take_item_name}은(는) {take_student_number} {take_student_name_masked}이(가) 가져갔습니다.")
                     continue
@@ -199,8 +210,18 @@ def main():
                     else:
                         print("'y'또는 'n'을 입력해주세요.")
                 if is_take == "y":
-                    input_student_name = input("이름을 입력해주세요> ")
-                    input_student_number= input("학번을 입력해주세요> ")
+                    while True:
+                        input_student_name = input("이름을 입력해주세요> ")
+                        if len(input_student_name) < 1:
+                            print("이름을 다시 입력하세요.")
+                            continue
+                        break
+                    while True:
+                        input_student_number= input("학번을 입력해주세요> ")
+                        if len(input_student_number) != 5:
+                            print("학번을 '20713'형식으로 다시 입력하세요.")
+                            continue
+                        break
                     take_students[student_id] = add_take_student(input_student_name, input_student_number, student_id, lost_items)
                     take_lost_item(input_id, lost_items)
                     print("분실물을 가져가셨습니다.")
