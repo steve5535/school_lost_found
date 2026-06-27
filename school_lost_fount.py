@@ -197,11 +197,15 @@ def main():
                     continue
                 take_item_name = lost_items[input_id]["이름"]
                 take_item_place = lost_items[input_id]["장소"]
+                take_student_id = None
                 if lost_items[input_id]["상태"] == False: # 이미 가져갔다면
                     for i in range(1, student_id+1):
                         if take_students[i]["분실물id"] == input_id:
                             take_student_id = i
                             break
+                    if take_student_id == None:
+                        print("해당하는 id를 찾지 못했습니다")
+                        continue
                     take_student_name_masked = (take_students[take_student_id]["학생이름"])[0] + "*" + (take_students[take_student_id]["학생이름"])[2:] # 가져간 학생이름 2번째 이름 *으로 마스킹 하기
                     take_student_number = take_students[take_student_id]["학생학번"]
                     print(f"{take_item_place}에서 찾은 {take_item_name}은(는) {take_student_number} {take_student_name_masked}이(가) {take_students[take_student_id]['가져간시간']}에 가져갔습니다.")
