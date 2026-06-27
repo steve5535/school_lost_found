@@ -4,7 +4,7 @@
 # 검색
 # 수정
 
-#TODO: while문 돌아가기 기능 함수로 만들어서 추가하기
+#TODO: while문 돌아가기 기능 함수로 만들어서 추가하기, lost_items id 랑 take_students id 분리하기
 
 '''
 lost_items 형식
@@ -59,14 +59,20 @@ def take_lost_item(input_id, lost_items):
     lost_items[input_id]["상태"] = False
 
 # 분실물 가져간 학생 추가
-def add_take_student(student_name, student_number, id, lost_items):
-    item_name = lost_items[id]["이름"]
+def add_take_student(student_name, student_number, student_id, lost_items):
+    item_name = lost_items[student_id]["이름"]
     take_students = {
         "분실물":item_name,
         "학생이름":student_name,
         "학생학번":student_number
     }
     return take_students
+
+# 메뉴로 돌아가기 함수 true false를 리턴해서 true면 break
+def back_menu(user_input):
+    if user_input == "q":
+        return True
+    return False
 
 # bool자료형으로 받은 상태를 문자로 변경
 def status_to_string(is_in_item):
@@ -88,6 +94,7 @@ def main():
         1:{"분실물":"연필", "학생이름":"성선혁", "학생학번":"20713"}
     }
     item_id = len(lost_items) + 1
+    student_id = len(take_students) + 1
     
     while True:
         print("=============================")
@@ -127,13 +134,15 @@ def main():
                 print("아직 등록된 분실물이 없습니다")
                 continue
             while True:
-                input_item = input("분실물 이름을 입력하세요> ")
+                input_item = input("분실물 이름을 입력하세요(메뉴로 돌아가기 'q')> ")
+                if back_menu(input_item):
+                    print("메뉴로 돌아갑니다.")
+                    break
                 is_found, found_list = search_item(input_num, input_item, lost_items)
                 if is_found: # 입력한 분실물 이름을 포함한 분실물이 저장되어 있다면
                     print(f"{input_item}이(가) 포함된 분실물을 찾았습니다")
                     for item in found_list:
                         print(f"{item['id']}. 이름: {item['이름']}, 찾은 장소: {item['장소']}, 상태: {status_to_string(item['상태'])}")
-                    break
                 else: # 입력한 분실물 이름을 포함한 분실물이 없다면
                     print(f"현재 있는 분실물 중 '{input_item}'이(가) 포함되어있는 분실물은 없습니다. 다시 입력하세요")
         
@@ -183,7 +192,7 @@ def main():
                 if is_take == "y":
                     input_student_name = input("이름을 입력해주세요> ")
                     input_student_number= input("학번을 입력해주세요> ")
-                    take_students[input_id] = add_take_student(input_student_name, input_student_number, input_id, lost_items)
+                    take_students[student_id] = add_take_student(input_student_name, input_student_number, student_id, lost_items)
                     take_lost_item(input_id, lost_items)
                     print("분실물을 가져가셨습니다.")
                     break
