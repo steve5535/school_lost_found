@@ -1,8 +1,12 @@
+import datetime
+
 # 학교 분실물 파이썬 버전
 # 추가
 # 찾아가면 업데이트
 # 검색
 # 수정
+
+# TODO: 분실물 가져간 사람들 출력하는 기능 추가(6번)
 
 '''
 lost_items 형식
@@ -16,9 +20,6 @@ lost_items 형식
 take_students 형식
     1: {"분실물":???, "분실물id": ? "학생이름":???, "학생학번":???, "가져간시간": ?년 ?월 ?일}
 '''
-
-
-import datetime
 
 
 ## Srvice
