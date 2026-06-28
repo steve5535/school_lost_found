@@ -26,7 +26,7 @@ take_students 형식
 # 분실물 추가 함수
 def add_lost_item(lost_items, item_id, item, place, state):
     item_add_time = datetime.datetime.now().strftime("%Y년 %m월 %d일")
-    lost_items[item_id] = {"이름":item, "장소":place,"등록시간": item_add_time, "상태":state} # 분실물이름과 장소 딕셔너리로 저장한 값을 전체 분실물 딕셔너리에 추가 나중에 JSON파일 형식처럼
+    lost_items[item_id] = {"이름":item, "장소":place, "등록시간": item_add_time, "상태":state} # 분실물이름과 장소 딕셔너리로 저장한 값을 전체 분실물 딕셔너리에 추가 나중에 JSON파일 형식처럼
 
 # 분실물 전체 검색 함수
 def search_all_item(lost_items):
@@ -117,11 +117,12 @@ def main():
         print("3. 분실물 이름으로 검색")
         print("4. 분실한 장소로 검색")
         print("5. 분실물 찾아가기")
-        print("6. 종료")
+        print("6. 분실물 가져간 학생 출력")
+        print("7. 종료")
         try:
             input_num = int(input("번호 입력> "))
-            if not(1 <= input_num <= 6):
-                raise ValueError("1부터 5까지 사이의 숫자를 입력해주세요.")
+            if not(1 <= input_num <= 7):
+                raise ValueError("1부터 7까지 사이의 숫자를 입력해주세요.")
         except ValueError:
             print("잘못된 입력을 하셨습니다. 다시 입력하세요.")
             continue
@@ -245,8 +246,19 @@ def main():
                     print("가져가지 않으셨습니다.")
                     break
         
+        # 분실물 가져간 학생 출력
+        elif input_num == 6:
+            if len(take_students) == 0:
+                print("분실물을 가져간 학생은 없습니다.")
+                continue
+            for i in range(1, len(take_students)+1):
+                take_student_name_masked = (take_students[i]["학생이름"])[0] + "*" + (take_students[i]["학생이름"])[2:]
+                take_student_number = take_students[i]["학생학번"]
+                take_time = take_students[i]["가져간시간"]
+                take_lost_item = take_students[i]["분실물"]
+                print(f"{i}. 가져간 시간: {take_time}, 학번: {take_student_number}, 이름: {take_student_name_masked}, 가져간 분실물: {take_lost_item}")
         # 종료
-        elif input_num == 6: 
+        elif input_num == 7: 
             print("프로그램을 종료합니다")
             break
 
