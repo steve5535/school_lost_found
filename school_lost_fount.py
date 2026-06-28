@@ -6,7 +6,7 @@ import datetime
 # 검색
 # 수정
 
-# TODO: 분실물 가져간 사람들 출력하는 기능 추가(6번)
+# TODO: 분실물 수정기능(보관중인 분실물만), json파일로 변경
 
 '''
 lost_items 형식
