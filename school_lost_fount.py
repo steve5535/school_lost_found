@@ -6,7 +6,7 @@ import datetime
 # 검색
 # 수정
 
-# TODO: 분실물 수정기능(보관중인 분실물만), json파일로 변경
+# TODO: 분실물 수정기능 예외 처리, json파일로 변경
 
 '''
 lost_items 형식
@@ -81,6 +81,15 @@ def add_take_student(student_name, student_number, input_id, lost_items):
     }
     return take_students
 
+def is_in_item(input_id, lost_items):
+    if lost_items[input_id+1]['상태']: # 분실물을 보관중이면
+        return True
+    else:
+        return False
+
+def modify_item(input_id, input_new_name, lost_items):
+    lost_items[input_id]['이름'] = input_new_name
+
 # 메뉴로 돌아가기 함수 true false를 리턴해서 true면 break
 def back_menu(user_input):
     if user_input == "q":
@@ -113,15 +122,16 @@ def main():
     while True:
         print("=============================")
         print("1. 분실물 등록")
-        print("2. 전체 분실물 검색")
-        print("3. 분실물 이름으로 검색")
-        print("4. 분실한 장소로 검색")
-        print("5. 분실물 찾아가기")
-        print("6. 분실물 가져간 학생 출력")
-        print("7. 종료")
+        print("2. 분실물 수정")
+        print("3. 전체 분실물 검색")
+        print("4. 분실물 이름으로 검색")
+        print("5. 분실한 장소로 검색")
+        print("6. 분실물 찾아가기")
+        print("7. 분실물 가져간 학생 출력")
+        print("8. 종료")
         try:
             input_num = int(input("번호 입력> "))
-            if not(1 <= input_num <= 7):
+            if not(1 <= input_num <= 8):
                 raise ValueError("1부터 7까지 사이의 숫자를 입력해주세요.")
         except ValueError:
             print("잘못된 입력을 하셨습니다. 다시 입력하세요.")
@@ -136,8 +146,23 @@ def main():
             add_lost_item(lost_items, item_id, item, place, state)
             item_id += 1
         
+        # 분실물 수정
+        elif input_num == 2:
+            if len(lost_items) == 0: # 등록된 분실물이 있는지 검사
+                print("아직 등록된 분실물이 없습니다.")
+            else:
+                input_num = int(input("수정할 분실물의 번호를 입력하세요 >"))
+                if not is_in_item(input_num, lost_items):
+                    print("해당 분실물은 현재 보관중이 아닙니다.")
+                is_modify = input("'y'또는 'n'을 입력해주세요.")
+                if is_modify == "y":
+                    input_item = input('수정될 분실물의 이름을 입력해 주세요> ')
+                    modify_item(input_num, input_item, lost_items)
+                else:
+                    print("변경하지 않으셨습니다.")
+        
         # 분실물 전체 검색
-        elif input_num == 2: 
+        elif input_num == 3: 
             if len(lost_items) == 0: # 등록된 분실물이 있는지 검사
                 print("아직 등록된 분실물이 없습니다.")
             else: # 있다면 보여주기
@@ -146,7 +171,7 @@ def main():
                     print(f"{item['id']}. 이름: {item['이름']}, 등록 시간: {item['등록시간']}, 찾은 장소: {item['장소']}, 상태: {status_to_string(item['상태'])}")
         
         # 분실물 이름으로 검색
-        elif input_num == 3: 
+        elif input_num == 4: 
             if len(lost_items) == 0: # 분실물이 저장되어 있는지 검사
                 print("아직 등록된 분실물이 없습니다.")
                 continue
@@ -164,7 +189,7 @@ def main():
                     print(f"현재 있는 분실물 중 '{input_item}'이(가) 포함되어있는 분실물은 없습니다. 다시 입력하세요.")
         
         # 분실한 장소로 검색
-        elif  input_num == 4:
+        elif  input_num == 5:
             if len(lost_items) == 0: # 분실물이 저장되어 있는지 검사
                 print("아직 등록된 분실물이 없습니다.")
                 continue
@@ -182,7 +207,7 @@ def main():
                     print(f"현재 있는 분실물 중 '{input_place}'에서 찾은 분실물은 없습니다. 다시 입력하세요")
         
         # 분실물 찾아가기
-        elif input_num == 5:
+        elif input_num == 6:
             if len(lost_items) == 0:
                 print("아직 등록된 분실물이 없습니다.")
                 continue
@@ -247,7 +272,7 @@ def main():
                     break
         
         # 분실물 가져간 학생 출력
-        elif input_num == 6:
+        elif input_num ==7:
             if len(take_students) == 0:
                 print("분실물을 가져간 학생은 없습니다.")
                 continue
@@ -258,7 +283,7 @@ def main():
                 take_lost_item = take_students[i]["분실물"]
                 print(f"{i}. 가져간 시간: {take_time}, 학번: {take_student_number}, 이름: {take_student_name_masked}, 가져간 분실물: {take_lost_item}")
         # 종료
-        elif input_num == 7: 
+        elif input_num == 8: 
             print("프로그램을 종료합니다")
             break
 
