@@ -1,3 +1,4 @@
+import json
 import datetime
 
 # 학교 분실물 파이썬 버전
@@ -108,18 +109,29 @@ def status_to_string(is_in_item):
 ## Controller
 # 메인함수
 def main():
-    lost_items = {
-        1:{"이름":"연필", "장소":"교실", "등록시간": "2026년 05월 20일", "상태":False},
-        2:{"이름":"시계", "장소":"운동장", "등록시간": "2026년 03월 15일", "상태":True},
-        3:{"이름":"에어팟", "장소":"운동장", "등록시간": "2026년 06월 30일", "상태":False},
-        4:{"이름":"연필", "장소":"교무실", "등록시간": "2026년 04월 14일", "상태":True}
-    }
-    take_students = {
-        1: {"분실물":"연필", "분실물id":1, "학생이름":"성선혁", "학생학번":20713, "가져간시간": "2026년 06월 01일"},
-        2: {"분실물":"에어팟", "분실물id":3, "학생이름":"서성민", "학생학번":20712, "가져간시간": "2026년 07월 01일"}
-    }
-    item_id = len(lost_items) + 1
-    student_id = len(take_students) + 1
+    try :
+        with open("lost_items.json", "r", encoding="utf-8") as f:
+            lost_items = json.load(f)
+            if lost_items:
+                item_id_list = [int(id) for id in lost_items.keys()]
+                item_id = max(item_id_list) + 1
+            else:
+                item_id = 1
+    except:
+        lost_items = {}
+        item_id = 1
+        
+    try:
+        with open("take_students.json", "r", encoding="utf-8") as f:
+            take_students = json.load(f)
+            if take_students:
+                student_id_list = [int(id) for id in take_students.keys()]
+                student_id = max(student_id_list) + 1
+            else:
+                student_id = 1
+    except:
+        take_students ={}
+        student_id = 1
     
     while True:
         print("=============================")
