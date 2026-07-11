@@ -6,12 +6,12 @@ import datetime
 # 검색
 # 수정
 
-# TODO: 분실물 수정기능 예외 처리, json파일로 변경
+# TODO: json파일로 변경
 
 '''
 lost_items 형식
 {
-    1: {"이름":???, "장소":???, "등록시간": ?년 ?월 ?일, "상태":True},
+    1: {"이름":???, "장소":???, "등록시간": ?년 ?월 ?일, "상태":True}, 상태가 Flase면 찾아감
     2: {"이름":???, "장소":???, "등록시간": ?년 ?월 ?일, "상태":Flase}
 }
 '''
@@ -81,12 +81,14 @@ def add_take_student(student_name, student_number, input_id, lost_items):
     }
     return take_students
 
+# 분실물 보관중인지 확인
 def is_in_item(input_id, lost_items):
-    if lost_items[input_id+1]['상태']: # 분실물을 보관중이면
+    if lost_items[input_id]['상태']: # 분실물을 보관중이지 않으면 
         return True
     else:
         return False
 
+# 분실물 수정
 def modify_item(input_id, input_new_name, lost_items):
     lost_items[input_id]['이름'] = input_new_name
 
@@ -151,15 +153,30 @@ def main():
             if len(lost_items) == 0: # 등록된 분실물이 있는지 검사
                 print("아직 등록된 분실물이 없습니다.")
             else:
-                input_num = int(input("수정할 분실물의 번호를 입력하세요 >"))
-                if not is_in_item(input_num, lost_items):
-                    print("해당 분실물은 현재 보관중이 아닙니다.")
-                is_modify = input("'y'또는 'n'을 입력해주세요.")
-                if is_modify == "y":
-                    input_item = input('수정될 분실물의 이름을 입력해 주세요> ')
-                    modify_item(input_num, input_item, lost_items)
-                else:
-                    print("변경하지 않으셨습니다.")
+                while True:
+                    input_num = input("수정할 분실물의 번호를 입력하세요(메뉴로 돌아가기 'q')> ")
+                    if back_menu(input_num):
+                        print("메뉴로 돌아갑니다.")
+                        break
+                    try:
+                        input_num = int(input_num)
+                    except:
+                        print("분실물 '번호'를 입력하세요")
+                        continue
+                    if (input_num >= len(lost_items)+1):
+                        print(f"'{input_num}'번은 존재하지 않습니다.")
+                        continue
+                    if is_in_item(input_num, lost_items) == False:
+                        print(f"{lost_items[input_num]['이름']}은(는) 현재 보관중이 아닙니다.")
+                        continue
+                    is_modify = input(f"'{lost_items[input_num]['이름']}'을(를) 수정하시겠습니까?(y/n)> ")
+                    if is_modify == "y":
+                        input_item = input('수정될 분실물의 이름을 입력해 주세요> ')
+                        modify_item(input_num, input_item, lost_items)
+                        print(f"이름을 {input_item}으로 변경 완료했습니다.")
+                    else:
+                        print("변경하지 않으셨습니다.")
+                        break
         
         # 분실물 전체 검색
         elif input_num == 3: 
@@ -253,11 +270,11 @@ def main():
                             continue
                         break
                     while True:
-                        input_student_number= input("학번을 입력해주세요> ")
-                        if len(input_student_number) != 5:
-                            print("학번을 '20713'형식으로 다시 입력하세요.")
-                            continue
                         try:
+                            input_student_number= input("학번을 입력해주세요> ")
+                            if len(input_student_number) != 5:
+                                print("학번을 '20713'형식으로 다시 입력하세요.")
+                                continue
                             input_student_number = int(input_student_number)
                         except ValueError:
                             print("숫자를 입력하세요.")
@@ -280,8 +297,8 @@ def main():
                 take_student_name_masked = (take_students[i]["학생이름"])[0] + "*" + (take_students[i]["학생이름"])[2:]
                 take_student_number = take_students[i]["학생학번"]
                 take_time = take_students[i]["가져간시간"]
-                take_lost_item = take_students[i]["분실물"]
-                print(f"{i}. 가져간 시간: {take_time}, 학번: {take_student_number}, 이름: {take_student_name_masked}, 가져간 분실물: {take_lost_item}")
+                take_lost_item_name = take_students[i]["분실물"]
+                print(f"{i}. 가져간 시간: {take_time}, 학번: {take_student_number}, 이름: {take_student_name_masked}, 가져간 분실물: {take_lost_item_name}")
         # 종료
         elif input_num == 8: 
             print("프로그램을 종료합니다")
