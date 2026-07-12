@@ -48,10 +48,10 @@ def search_item(input_num, input_keyword, lost_items):
     is_in_item = False
     is_match = False
     for item_id, item_info in lost_items.items():
-        if input_num == 3:
+        if input_num == 4:
             item_name = item_info["이름"]
             is_match = input_keyword in item_name
-        elif input_num == 4:
+        elif input_num == 5:
             item_place = item_info["장소"]
             is_match = input_keyword == item_place
         if is_match:
@@ -110,7 +110,7 @@ def status_to_string(is_in_item):
 # 메인함수
 def main():
     try :
-        with open("lost_items.json", "r", encoding="utf-8") as f:
+        with open("json/lost_items.json", "r", encoding="utf-8") as f:
             lost_items = json.load(f)
             if lost_items:
                 item_id_list = [int(id) for id in lost_items.keys()]
@@ -122,7 +122,7 @@ def main():
         item_id = 1
         
     try:
-        with open("take_students.json", "r", encoding="utf-8") as f:
+        with open("json/take_students.json", "r", encoding="utf-8") as f:
             take_students = json.load(f)
             if take_students:
                 student_id_list = [int(id) for id in take_students.keys()]
