@@ -112,9 +112,12 @@ def main():
     try :
         with open("json/lost_items.json", "r", encoding="utf-8") as f:
             lost_items = json.load(f)
+            temp_lost_items = {} # key를 int로 변환하기 위해 필요한 임시 딕셔너리
+            for item_id, item_info in lost_items.items():
+                temp_lost_items[int(item_id)] = item_info
+            lost_items = temp_lost_items
             if lost_items:
-                item_id_list = [int(id) for id in lost_items.keys()]
-                item_id = max(item_id_list) + 1
+                item_id = max(lost_items.keys()) + 1
             else:
                 item_id = 1
     except:
@@ -124,9 +127,12 @@ def main():
     try:
         with open("json/take_students.json", "r", encoding="utf-8") as f:
             take_students = json.load(f)
+            temp_take_students = {}
+            for take_student_id, student_info in take_students.items():
+                temp_take_students[int(take_student_id)] = student_info
+            take_students = temp_take_students
             if take_students:
-                student_id_list = [int(id) for id in take_students.keys()]
-                student_id = max(student_id_list) + 1
+                student_id = max(take_students.keys()) + 1
             else:
                 student_id = 1
     except:
@@ -214,6 +220,7 @@ def main():
                     print(f"'{input_item}'이(가) 포함된 분실물을 찾았습니다.")
                     for item in found_list:
                         print(f"{item['id']}. 이름: {item['이름']}, 찾은 장소: {item['장소']}, 등록 시간: {item['등록시간']}, 상태: {status_to_string(item['상태'])}")
+                    break
                 else: # 입력한 분실물 이름을 포함한 분실물이 없다면
                     print(f"현재 있는 분실물 중 '{input_item}'이(가) 포함되어있는 분실물은 없습니다. 다시 입력하세요.")
         
@@ -232,6 +239,7 @@ def main():
                     print(f"{input_place}에서 찾은 분실물을 찾았습니다")
                     for item in found_list:
                         print(f"{item['id']}. 이름: {item['이름']}, 찾은 장소: {item['장소']}, 등록 시간: {item['등록시간']}, 상태: {status_to_string(item['상태'])}")
+                    break
                 else: # 입력한 장소에서 찾은 분실물이 없다면
                     print(f"현재 있는 분실물 중 '{input_place}'에서 찾은 분실물은 없습니다. 다시 입력하세요")
         
@@ -301,7 +309,7 @@ def main():
                     break
         
         # 분실물 가져간 학생 출력
-        elif input_num ==7:
+        elif input_num == 7:
             if len(take_students) == 0:
                 print("분실물을 가져간 학생은 없습니다.")
                 continue
