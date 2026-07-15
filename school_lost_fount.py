@@ -7,7 +7,7 @@ import datetime
 # 검색
 # 수정
 
-# TODO: json파일로 변경
+# TODO: json파일저장 추가할때, 수정했을때, 분실물을 가져갔을때, 분실물 가져간 학생을 저장할때, 종료할때
 
 '''
 lost_items 형식
@@ -24,10 +24,24 @@ take_students 형식
 
 
 ## Srvice
+
+LOST_ITEM_JSON = "json/lost_items.json"
+TAKE_STUDENTS_JSON = "json/take_students.json"
+
+# json 파일로 저장하는 함수
+def save_to_json(data, file_path):
+    try:
+        with open(file_path, "w", encoding="utf-8") as f:
+            json.dump(data, f, indent=4, ensure_ascii=False)
+    except Exception as e:
+        print(f"파일 저장 중 오류 발생 {file_path}: {e}")
+        
+
 # 분실물 추가 함수
 def add_lost_item(lost_items, item_id, item, place, state):
     item_add_time = datetime.datetime.now().strftime("%Y년 %m월 %d일")
     lost_items[item_id] = {"이름":item, "장소":place, "등록시간": item_add_time, "상태":state} # 분실물이름과 장소 딕셔너리로 저장한 값을 전체 분실물 딕셔너리에 추가 나중에 JSON파일 형식처럼
+    save_to_json(lost_items, LOST_ITEM_JSON)
 
 # 분실물 전체 검색 함수
 def search_all_item(lost_items):
@@ -68,6 +82,7 @@ def search_item(input_num, input_keyword, lost_items):
 # 분실물 가져가기
 def take_lost_item(input_id, lost_items):
     lost_items[input_id]["상태"] = False
+    save_to_json(lost_items, LOST_ITEM_JSON)
 
 # 분실물 가져간 학생 추가
 def add_take_student(student_name, student_number, input_id, lost_items):
@@ -80,6 +95,7 @@ def add_take_student(student_name, student_number, input_id, lost_items):
         "학생학번":student_number,
         "가져간시간":item_take_time
     }
+    save_to_json(take_students, TAKE_STUDENTS_JSON)
     return take_students
 
 # 분실물 보관중인지 확인
@@ -92,6 +108,7 @@ def is_in_item(input_id, lost_items):
 # 분실물 수정
 def modify_item(input_id, input_new_name, lost_items):
     lost_items[input_id]['이름'] = input_new_name
+    save_to_json(lost_items, LOST_ITEM_JSON)
 
 # 메뉴로 돌아가기 함수 true false를 리턴해서 true면 break
 def back_menu(user_input):
@@ -110,7 +127,7 @@ def status_to_string(is_in_item):
 # 메인함수
 def main():
     try :
-        with open("json/lost_items.json", "r", encoding="utf-8") as f:
+        with open(LOST_ITEM_JSON, "r", encoding="utf-8") as f:
             lost_items = json.load(f)
             temp_lost_items = {} # key를 int로 변환하기 위해 필요한 임시 딕셔너리
             for item_id, item_info in lost_items.items():
@@ -125,7 +142,7 @@ def main():
         item_id = 1
         
     try:
-        with open("json/take_students.json", "r", encoding="utf-8") as f:
+        with open(TAKE_STUDENTS_JSON, "r", encoding="utf-8") as f:
             take_students = json.load(f)
             temp_take_students = {}
             for take_student_id, student_info in take_students.items():
@@ -140,7 +157,7 @@ def main():
         student_id = 1
     
     while True:
-        print("=============================")
+        print("============================="*3)
         print("1. 분실물 등록")
         print("2. 분실물 수정")
         print("3. 전체 분실물 검색")
@@ -149,6 +166,7 @@ def main():
         print("6. 분실물 찾아가기")
         print("7. 분실물 가져간 학생 출력")
         print("8. 종료")
+        print("============================="*3)
         try:
             input_num = int(input("번호 입력> "))
             if not(1 <= input_num <= 8):
@@ -191,7 +209,7 @@ def main():
                     if is_modify == "y":
                         input_item = input('수정될 분실물의 이름을 입력해 주세요> ')
                         modify_item(input_num, input_item, lost_items)
-                        print(f"이름을 {input_item}으로 변경 완료했습니다.")
+                        print(f"이름을 '{input_item}'으로 변경 완료했습니다.")
                     else:
                         print("변경하지 않으셨습니다.")
                         break
@@ -202,6 +220,7 @@ def main():
                 print("아직 등록된 분실물이 없습니다.")
             else: # 있다면 보여주기
                 items_list = search_all_item(lost_items)
+                print("전체 분실물 검색 결과:")
                 for item in items_list:
                     print(f"{item['id']}. 이름: {item['이름']}, 등록 시간: {item['등록시간']}, 찾은 장소: {item['장소']}, 상태: {status_to_string(item['상태'])}")
         
@@ -217,7 +236,7 @@ def main():
                     break
                 is_found, found_list = search_item(input_num, input_item, lost_items)
                 if is_found: # 입력한 분실물 이름을 포함한 분실물이 저장되어 있다면
-                    print(f"'{input_item}'이(가) 포함된 분실물을 찾았습니다.")
+                    print(f"'{input_item}'이 포함된 분실물을 찾은 결과:")
                     for item in found_list:
                         print(f"{item['id']}. 이름: {item['이름']}, 찾은 장소: {item['장소']}, 등록 시간: {item['등록시간']}, 상태: {status_to_string(item['상태'])}")
                     break
@@ -236,7 +255,7 @@ def main():
                     break
                 is_found, found_list = search_item(input_num, input_place, lost_items)
                 if is_found: # 입력한 장소에 대한 분실물이 있다면
-                    print(f"{input_place}에서 찾은 분실물을 찾았습니다")
+                    print(f"{input_place}이 포함된 분실물을 찾은 결과:")
                     for item in found_list:
                         print(f"{item['id']}. 이름: {item['이름']}, 찾은 장소: {item['장소']}, 등록 시간: {item['등록시간']}, 상태: {status_to_string(item['상태'])}")
                     break
@@ -301,7 +320,7 @@ def main():
                             continue
                         take_students[student_id] = add_take_student(input_student_name, input_student_number, input_id, lost_items)
                         take_lost_item(input_id, lost_items)
-                        print("분실물을 가져가셨습니다.")
+                        print(f"{take_item_place}에서 찾은 {take_item_name}을(를) 가져가셨습니다.")
                         student_id += 1
                         break
                 else:
@@ -321,6 +340,8 @@ def main():
                 print(f"{i}. 가져간 시간: {take_time}, 학번: {take_student_number}, 이름: {take_student_name_masked}, 가져간 분실물: {take_lost_item_name}")
         # 종료
         elif input_num == 8: 
+            save_to_json(lost_items, LOST_ITEM_JSON)
+            save_to_json(take_students, TAKE_STUDENTS_JSON)
             print("프로그램을 종료합니다")
             break
 
